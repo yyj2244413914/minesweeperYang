@@ -12,9 +12,9 @@ public class Cell extends JButton {
     private static final long serialVersionUID = 1L;  // to prevent serial warning
 
     // 为Cell定义其父类可以根据不同状态而采用的配色方案所使用的颜色常量，方便使用。
-    public static final Color BG_NOT_REVEALED = Color.GREEN;
+    public static final Color BG_NOT_REVEALED = new Color(0, 0, 0, 0); // 透明
     public static final Color FG_NOT_REVEALED = Color.RED;    // flag, mines
-    public static final Color BG_REVEALED = Color.DARK_GRAY;
+    public static final Color BG_REVEALED = Color.LIGHT_GRAY; // 暴露格子为浅灰色
     public static final Color FG_REVEALED = Color.YELLOW; // number of mines
     public static final Font FONT_NUMBERS = new Font("Monospaced", Font.BOLD, 20);
 
@@ -26,6 +26,7 @@ public class Cell extends JButton {
     boolean isMined;
     /** Is Flagged by player? */
     boolean isFlagged;
+    public boolean isMineHighlighted = false;
 
     /** Constructor */
     public Cell(int row, int col) {
@@ -45,9 +46,52 @@ public class Cell extends JButton {
         paint();
     }
 
+
     /** 对Cell外观的绘制就是在这个方法里实现 */
     public void paint() {
-        super.setForeground(isRevealed? FG_REVEALED: FG_NOT_REVEALED);
-        super.setBackground(isRevealed? BG_REVEALED: BG_NOT_REVEALED);
+        if (isMineHighlighted) {
+            setOpaque(true);
+            setBackground(new Color(255, 182, 193)); // 浅红色
+        } else if (isFlagged) {
+            setOpaque(true);
+            setBackground(Color.DARK_GRAY);
+        } else if (isRevealed) {
+            setOpaque(true);
+            setBackground(BG_REVEALED);
+        } else {
+            setOpaque(false);
+            setBackground(BG_NOT_REVEALED);
+        }
+        setForeground(isRevealed ? FG_REVEALED : FG_NOT_REVEALED);
+    }
+
+    /**
+     * 设置格子显示数字时自动设置颜色和字体
+     */
+    public void setNumber(int num) {
+        if (num == 0) {
+            setText("");
+        } else {
+            setText(String.valueOf(num));
+            switch (num) {
+                case 1: setForeground(Color.BLUE); break;
+                case 2: setForeground(new Color(0, 128, 0)); break;
+                case 3: setForeground(Color.RED); break;
+                case 4: setForeground(new Color(0, 0, 128)); break;
+                case 5: setForeground(new Color(128, 0, 0)); break;
+                case 6: setForeground(new Color(0, 128, 128)); break;
+                case 7: setForeground(Color.BLACK); break;
+                case 8: setForeground(Color.GRAY); break;
+                default: setForeground(Color.DARK_GRAY); break;
+            }
+            // 字体大小和格子大小挂钩，最小18
+            int fontSize = 24;
+            try {
+                fontSize = Math.max(18, minesweeper.GameBoardMediumPanel.CELL_SIZE / 2);
+            } catch (Exception e) {}
+            setFont(new java.awt.Font("微软雅黑", java.awt.Font.BOLD, fontSize));
+            // 去除按钮内边距
+            setMargin(new java.awt.Insets(0, 0, 0, 0));
+        }
     }
 }

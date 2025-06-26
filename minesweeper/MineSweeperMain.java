@@ -15,7 +15,7 @@ public class MineSweeperMain extends JFrame {
     private JPanel buttonPanel;
 
     // 背景图片路径
-    private static final String BG_IMAGE_PATH = "C:/Users/31996/OneDrive/桌面/minesweeper/Iverson1.jpg";
+    private static final String BG_IMAGE_PATH = "C:/Users/31996/OneDrive/桌面/minesweeper/minesweeper/Iverson1.jpg";
 
     // 自定义按钮区面板，绘制背景图片
     static class ButtonPanelWithBg extends JPanel {
@@ -50,7 +50,7 @@ public class MineSweeperMain extends JFrame {
         titleRow.setLayout(new BoxLayout(titleRow, BoxLayout.X_AXIS));
         titleRow.setOpaque(false);
         // 加载并缩放图片为70x50
-        ImageIcon mineIcon = new ImageIcon("C:/Users/31996/OneDrive/桌面/minesweeper/mine.png");
+        ImageIcon mineIcon = new ImageIcon("C:/Users/31996/OneDrive/桌面/minesweeper/minesweeper/mine.png");
         Image img = mineIcon.getImage();
         Image scaledImg = img.getScaledInstance(70, 50, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImg);
@@ -103,7 +103,7 @@ public class MineSweeperMain extends JFrame {
 
 
         // 按钮事件
-        btnStartGame.addActionListener(e -> new DifficultyFrame(this).setVisible(true));
+        btnStartGame.addActionListener(e -> new DifficultyFrame().setVisible(true));
         // btnHistory、btnSettings 可在此添加事件
     }
 
