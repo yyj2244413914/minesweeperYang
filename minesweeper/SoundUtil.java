@@ -11,7 +11,7 @@ public class SoundUtil {
         if (!soundEnabled) return;
         try {
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(
-                SoundUtil.class.getResource("/minesweeper/音效.mp3"));
+                SoundUtil.class.getResource("/minesweeper/音效.wav"));
             Clip clip = AudioSystem.getClip();
             clip.open(audioIn);
             clip.start();
