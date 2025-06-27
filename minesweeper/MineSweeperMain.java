@@ -15,7 +15,7 @@ public class MineSweeperMain extends JFrame {
     private JPanel buttonPanel;
 
     // 背景图片路径
-    private static final String BG_IMAGE_PATH = "C:/Users/31996/OneDrive/桌面/minesweeper/minesweeper/Iverson1.jpg";
+    private static final String BG_IMAGE_PATH = "minesweeper/Iverson1.jpg";
 
     // 自定义按钮区面板，绘制背景图片
     static class ButtonPanelWithBg extends JPanel {
@@ -50,18 +50,28 @@ public class MineSweeperMain extends JFrame {
         titleRow.setLayout(new BoxLayout(titleRow, BoxLayout.X_AXIS));
         titleRow.setOpaque(false);
         // 加载并缩放图片为70x50
-        ImageIcon mineIcon = new ImageIcon("C:/Users/31996/OneDrive/桌面/minesweeper/minesweeper/mine.png");
+        ImageIcon mineIcon = new ImageIcon("minesweeper/mine.png");
         Image img = mineIcon.getImage();
         Image scaledImg = img.getScaledInstance(70, 50, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImg);
         JLabel leftMine = new JLabel(scaledIcon);
         JLabel rightMine = new JLabel(scaledIcon);
         JLabel title = new JLabel("扫雷 Minesweeper", SwingConstants.CENTER);
-        title.setFont(new Font("微软雅黑", Font.BOLD, 32));
+        title.setFont(new Font("微软雅黑", Font.BOLD, 25));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // 艺术字
+        JLabel artLabel = new JLabel(" X Iverson");
+        artLabel.setFont(new Font("微软雅黑", Font.BOLD | Font.ITALIC, 16));
+        artLabel.setForeground(new Color(60, 60, 180));
+        // 横向拼接标题和艺术字
+        JPanel titleTextPanel = new JPanel();
+        titleTextPanel.setLayout(new BoxLayout(titleTextPanel, BoxLayout.X_AXIS));
+        titleTextPanel.setOpaque(false);
+        titleTextPanel.add(title);
+        titleTextPanel.add(artLabel);
         titleRow.add(leftMine);
         titleRow.add(Box.createHorizontalStrut(10));
-        titleRow.add(title);
+        titleRow.add(titleTextPanel);
         titleRow.add(Box.createHorizontalStrut(10));
         titleRow.add(rightMine);
 
@@ -101,13 +111,34 @@ public class MineSweeperMain extends JFrame {
         setContentPane(coverPanel);
         setVisible(true);
 
+        // 自动为所有按钮绑定音效
+        SoundUtil.bindSoundToAllButtons(this.getContentPane());
 
         // 按钮事件
-        btnStartGame.addActionListener(e -> new DifficultyFrame().setVisible(true));
-        // btnHistory、btnSettings 可在此添加事件
+        btnStartGame.addActionListener(e -> {
+            SoundUtil.playClickSound();
+            new DifficultyFrame(this).setVisible(true);
+        });
+
+        btnHistory.addActionListener(e -> {
+            SoundUtil.playClickSound();
+            setVisible(false);
+            new DocumentPanel(this).setVisible(true);
+        });
+
+        btnSettings.addActionListener(e -> {
+            SoundUtil.playClickSound();
+            setVisible(false);
+            SettingPanel settingPanel = new SettingPanel(this);
+            settingPanel.setVisible(true);
+        });
     }
 
-
+    public void showCoverPanel() {
+        setContentPane(coverPanel);
+        revalidate();
+        repaint();
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MineSweeperMain::new);

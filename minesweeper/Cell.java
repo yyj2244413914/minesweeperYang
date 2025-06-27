@@ -34,6 +34,14 @@ public class Cell extends JButton {
         this.col = col;
         // 设置JButton所使用的字体
         super.setFont(FONT_NUMBERS);
+        // 动态调整字体大小，避免内容显示省略号
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                int size = Math.min(getWidth(), getHeight());
+                setFont(new Font("Monospaced", Font.BOLD, (int)(size * 0.6)));
+            }
+        });
     }
 
     /** 如果重新开始一局游戏，可以使用这个方法为当前的Cell对象进行所有属性值的初始化。 */
@@ -93,5 +101,12 @@ public class Cell extends JButton {
             // 去除按钮内边距
             setMargin(new java.awt.Insets(0, 0, 0, 0));
         }
+    }
+
+    @Override
+    public void setText(String text) {
+        super.setText(text);
+        int size = Math.min(getWidth(), getHeight());
+        setFont(new Font("Segoe UI Emoji", Font.BOLD, (int)(size * 0.25)));
     }
 }

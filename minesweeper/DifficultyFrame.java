@@ -9,9 +9,10 @@ public class DifficultyFrame extends JFrame {
     private static final long serialVersionUID = 1L;  // to prevent serial warning
     private JPanel coverPanel;
     private JPanel buttonPanel;
+    private MineSweeperMain mainFrame;
 
     // 背景图片路径
-    private static final String BG_IMAGE_PATH2 = "C:/Users/31996/OneDrive/桌面/minesweeper/minesweeper/难度选择背景.png";
+    private static final String BG_IMAGE_PATH2 = "minesweeper/难度选择背景.png";
 
     // 自定义按钮区面板，绘制背景图片
     static class ButtonPanelWithBg2 extends JPanel {
@@ -27,7 +28,8 @@ public class DifficultyFrame extends JFrame {
         }
     }
 
-    public DifficultyFrame() {
+    public DifficultyFrame(MineSweeperMain mainFrame) {
+        this.mainFrame = mainFrame;
         setTitle("难度选择");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 350);
@@ -46,12 +48,12 @@ public class DifficultyFrame extends JFrame {
         titleRow.setLayout(new BoxLayout(titleRow, BoxLayout.X_AXIS));
         titleRow.setOpaque(false);
         // 加载并缩放图片为70x50
-        ImageIcon StarIconLeft = new ImageIcon("C:/Users/31996/OneDrive/桌面/minesweeper/minesweeper/星星左.png");
+        ImageIcon StarIconLeft = new ImageIcon("minesweeper/星星左.png");
         Image imgleft = StarIconLeft.getImage();
         Image scaledImgLeft = imgleft.getScaledInstance(70, 50, Image.SCALE_SMOOTH);
         ImageIcon scaledIconLeft = new ImageIcon(scaledImgLeft);
         JLabel leftstar = new JLabel(scaledIconLeft);
-        ImageIcon StarIconRight = new ImageIcon("C:/Users/31996/OneDrive/桌面/minesweeper/minesweeper/星星右.png");
+        ImageIcon StarIconRight = new ImageIcon("minesweeper/星星右.png");
         Image imgRight = StarIconRight.getImage();
         Image scaledImgRight = imgRight.getScaledInstance(70, 50, Image.SCALE_SMOOTH);
         ImageIcon scaledIconRight = new ImageIcon(scaledImgRight);
@@ -101,46 +103,46 @@ public class DifficultyFrame extends JFrame {
         setContentPane(coverPanel);
         setVisible(true);
 
+        // 自动为所有按钮绑定音效
+        SoundUtil.bindSoundToAllButtons(this.getContentPane());
+
         // 按钮事件
         btnEasyGame.addActionListener(e -> {
-            // 创建游戏棋盘窗口
+            SoundUtil.playClickSound();
             JFrame gameFrame = new JFrame("扫雷游戏 - 初级");
             gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             gameFrame.setSize(600, 500);
             gameFrame.setLocationRelativeTo(null);
-            
-            // 创建游戏面板
-            GameBoardEasyPanel gamePanel = new GameBoardEasyPanel();
+            GameBoardEasyPanel gamePanel = new GameBoardEasyPanel(mainFrame);
             gameFrame.add(gamePanel);
-            
-            // 初始化新游戏
             gamePanel.newGame();
-            
-            // 显示游戏窗口
             gameFrame.setVisible(true);
-            
-            // 关闭难度选择窗口
             dispose();
         });
 
         btnMediumGame.addActionListener(e -> {
-            // 创建游戏棋盘窗口
+            SoundUtil.playClickSound();
             JFrame gameFrame = new JFrame("扫雷游戏 - 中级");
             gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            gameFrame.setSize(1000, 900);
             gameFrame.setLocationRelativeTo(null);
-            
-            // 创建游戏面板
-            GameBoardMediumPanel gamePanel = new GameBoardMediumPanel();
+            GameBoardMediumPanel gamePanel = new GameBoardMediumPanel(mainFrame);
             gameFrame.add(gamePanel);
-            
-            // 初始化新游戏
             gamePanel.newGame();
-            
-            // 自动适应内容大小
-            gameFrame.pack();
             gameFrame.setVisible(true);
-            
-            // 关闭难度选择窗口
+            dispose();
+        });
+
+        btnHardGame.addActionListener(e -> {
+            SoundUtil.playClickSound();
+            JFrame gameFrame = new JFrame("扫雷游戏 - 高级");
+            gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            gameFrame.setSize(1700, 1300);
+            gameFrame.setLocationRelativeTo(null);
+            GameBoardHardPanel gamePanel = new GameBoardHardPanel(mainFrame);
+            gameFrame.add(gamePanel);
+            gamePanel.newGame();
+            gameFrame.setVisible(true);
             dispose();
         });
     }

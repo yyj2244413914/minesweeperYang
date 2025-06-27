@@ -2,16 +2,17 @@ package minesweeper;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import static minesweeper.MineSweeperConstants.COLS;
-import static minesweeper.MineSweeperConstants.ROWS;
 
 public class GameBoardEasyPanel extends JPanel {
     private static final long serialVersionUID = 1L;  // to prevent serial warning
 
     // 定义每一个单元格的大小（单位为像素）
     public static final int CELL_SIZE = 60;
-    public static final int CANVAS_WIDTH  = CELL_SIZE * COLS; // Game board width/height
-    public static final int CANVAS_HEIGHT = CELL_SIZE * ROWS;
+    public static final int EASY_ROWS = 8;
+    public static final int EASY_COLS = 8;
+    public static final int EASY_MINES = 10;
+    public static final int CANVAS_WIDTH  = CELL_SIZE * EASY_COLS; // Game board width/height
+    public static final int CANVAS_HEIGHT = CELL_SIZE * EASY_ROWS;
     
     // 背景图片路径
     private static final String BG_IMAGE_PATH = "minesweeper/艾弗森聆听.jpg";
@@ -22,18 +23,20 @@ public class GameBoardEasyPanel extends JPanel {
     private BasketballProgressPanel progressPanel = new BasketballProgressPanel(0, 100, "minesweeper/basketball.png");
     private JLabel mineCountLabel = new JLabel("标记: 0/0");
     private int markedMines = 0;
-    private int realMines = MineSweeperConstants.MINES;
+    private int realMines = EASY_MINES;
     private Timer timer;
     private int seconds = 0;
 
     /** 游戏的整个界面面板应该包含的单元格数量是：ROWS*COLS */
-    Cell cells[][] = new Cell[ROWS][COLS];
-    /** 地雷的数量，使用常量中的值 */
-    int numMines = MineSweeperConstants.MINES;
+    private int rows = EASY_ROWS;
+    private int cols = EASY_COLS;
+    private int numMines = EASY_MINES;
+    Cell cells[][] = new Cell[rows][cols];
 
-    public GameBoardEasyPanel() {
-        // 设置初级难度
-        MineSweeperConstants.setEasy();
+    private MineSweeperMain mainFrame;
+
+    public GameBoardEasyPanel(MineSweeperMain mainFrame) {
+        this.mainFrame = mainFrame;
         setLayout(new BorderLayout());
 
         // 顶部信息面板
@@ -61,17 +64,21 @@ public class GameBoardEasyPanel extends JPanel {
         JMenuItem exitItem = new JMenuItem("退出");
         popupMenu.add(restartItem);
         popupMenu.add(exitItem);
-        menuButton.addActionListener(e -> popupMenu.show(menuButton, 0, menuButton.getHeight()));
+        menuButton.addActionListener(e -> {
+            SoundUtil.playClickSound();
+            popupMenu.show(menuButton, 0, menuButton.getHeight());
+        });
         // 重新开始
         restartItem.addActionListener(e -> {
+            SoundUtil.playClickSound();
             timer.stop();
             seconds = 0;
             timerLabel.setText("用时: 0s");
             markedMines = 0;
             mineCountLabel.setText("标记: 0/" + realMines);
             progressPanel.setValue(0);
-            for (int row = 0; row < ROWS; row++) {
-                for (int col = 0; col < COLS; col++) {
+            for (int row = 0; row < rows; row++) {
+                for (int col = 0; col < cols; col++) {
                     cells[row][col].isFlagged = false;
                     cells[row][col].isRevealed = false;
                     cells[row][col].isMineHighlighted = false;
@@ -84,11 +91,12 @@ public class GameBoardEasyPanel extends JPanel {
         });
         // 退出
         exitItem.addActionListener(e -> {
+            SoundUtil.playClickSound();
             timer.stop();
             SwingUtilities.getWindowAncestor(this).dispose();
             SwingUtilities.invokeLater(() -> {
-                MineSweeperMain mainFrame = new MineSweeperMain();
                 mainFrame.setVisible(true);
+                mainFrame.showCoverPanel();
             });
         });
 
@@ -104,19 +112,19 @@ public class GameBoardEasyPanel extends JPanel {
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setColor(Color.BLACK);
                 g2d.setStroke(new BasicStroke(2.0f));
-                int cellWidth = getWidth() / COLS;
-                int cellHeight = getHeight() / ROWS;
-                for (int i = 1; i < COLS; i++) {
+                int cellWidth = getWidth() / cols;
+                int cellHeight = getHeight() / rows;
+                for (int i = 1; i < cols; i++) {
                     int x = i * cellWidth;
                     g2d.drawLine(x, 0, x, getHeight());
                 }
-                for (int i = 1; i < ROWS; i++) {
+                for (int i = 1; i < rows; i++) {
                     int y = i * cellHeight;
                     g2d.drawLine(0, y, getWidth(), y);
                 }
             }
         };
-        boardPanel.setLayout(new GridLayout(ROWS, COLS, 3, 3));
+        boardPanel.setLayout(new GridLayout(rows, cols, 3, 3));
         add(boardPanel, BorderLayout.CENTER);
         
         // 加载背景图片
@@ -127,8 +135,8 @@ public class GameBoardEasyPanel extends JPanel {
         }
 
         // 将每一个Cell单元格对象加入的面板中.
-        for (int row = 0; row < ROWS; ++row) {
-            for (int col = 0; col < COLS; ++col) {
+        for (int row = 0; row < rows; ++row) {
+            for (int col = 0; col < cols; ++col) {
                 cells[row][col] = new Cell(row, col);
                 cells[row][col].setOpaque(false); // 设置格子透明
                 boardPanel.add(cells[row][col]);
@@ -137,13 +145,13 @@ public class GameBoardEasyPanel extends JPanel {
 
         // 创建鼠标事件监听器并添加到所有格子
         CellMouseListener mouseListener = new CellMouseListener();
-        for (int row = 0; row < ROWS; ++row) {
-            for (int col = 0; col < COLS; ++col) {
+        for (int row = 0; row < rows; ++row) {
+            for (int col = 0; col < cols; ++col) {
                 cells[row][col].addMouseListener(mouseListener);
             }
         }
 
-        setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT + 40));
+        setPreferredSize(new Dimension(CELL_SIZE * cols, CELL_SIZE * rows + 40));
         progressPanel.setMax(realMines);
         progressPanel.setValue(markedMines);
         mineCountLabel.setText("标记: " + markedMines + "/" + numMines);
@@ -170,17 +178,17 @@ public class GameBoardEasyPanel extends JPanel {
         g2d.setColor(Color.BLACK);
         g2d.setStroke(new BasicStroke(2.0f)); // 设置线条粗细
         
-        int cellWidth = getWidth() / COLS;
-        int cellHeight = getHeight() / ROWS;
+        int cellWidth = getWidth() / cols;
+        int cellHeight = getHeight() / rows;
         
         // 绘制垂直线
-        for (int i = 1; i < COLS; i++) {
+        for (int i = 1; i < cols; i++) {
             int x = i * cellWidth;
             g2d.drawLine(x, 0, x, getHeight());
         }
         
         // 绘制水平线
-        for (int i = 1; i < ROWS; i++) {
+        for (int i = 1; i < rows; i++) {
             int y = i * cellHeight;
             g2d.drawLine(0, y, getWidth(), y);
         }
@@ -188,18 +196,12 @@ public class GameBoardEasyPanel extends JPanel {
 
     // 初始化一个新游戏所需要调用的方法
     public void newGame() {
-        // 首先获得一个地雷分布地图对象
-        MineMap mineMap = new MineMap();
-        mineMap.newMineMap(numMines);
-
-        // 根据地雷地图中的数据，将每一个Cell对象按照初始的状态进行绘制
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
+        MineMap mineMap = new MineMap(rows, cols, numMines);
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
                 cells[row][col].newGame(mineMap.isMined[row][col]);
             }
         }
-        
-        // 重新绘制面板
         revalidate();
         repaint();
     }
@@ -221,8 +223,8 @@ public class GameBoardEasyPanel extends JPanel {
                 int neighborCol = srcCol + colOffset;
                 
                 // 检查边界：确保邻居位置在有效范围内
-                if (neighborRow >= 0 && neighborRow < ROWS && 
-                    neighborCol >= 0 && neighborCol < COLS) {
+                if (neighborRow >= 0 && neighborRow < rows && 
+                    neighborCol >= 0 && neighborCol < cols) {
                     // 如果邻居位置有地雷，计数加1
                     if (cells[neighborRow][neighborCol].isMined) {
                         numMines++;
@@ -261,8 +263,8 @@ public class GameBoardEasyPanel extends JPanel {
                     int neighborRow = srcRow + rowOffset;
                     int neighborCol = srcCol + colOffset;
                     // 检查边界
-                    if (neighborRow >= 0 && neighborRow < ROWS && 
-                        neighborCol >= 0 && neighborCol < COLS) {
+                    if (neighborRow >= 0 && neighborRow < rows && 
+                        neighborCol >= 0 && neighborCol < cols) {
                         revealCell(neighborRow, neighborCol);
                     }
                 }
@@ -275,8 +277,8 @@ public class GameBoardEasyPanel extends JPanel {
 
     // 如果玩家将所有的没有地雷的单元格打开，那么就判断该玩家赢了比赛，返回true。
     public boolean hasWon() {
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
                 // 如果非地雷格子没有暴露，则游戏未胜利
                 if (!cells[row][col].isMined && !cells[row][col].isRevealed) {
                     return false;
@@ -336,9 +338,15 @@ public class GameBoardEasyPanel extends JPanel {
     
     // 游戏结束处理
     private void gameOver(boolean isWin, String customMsg) {
+        // 保存游戏记录
+        DocumentPanel.addGameRecord("初级", seconds, isWin);
+        if (isWin) {
+            DocumentPanel.updateBestScore("初级", seconds);
+        }
+        
         // 显示所有地雷
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
                 if (cells[row][col].isMined) {
                     cells[row][col].isMineHighlighted = true;
                     cells[row][col].setText("💣");
@@ -355,14 +363,14 @@ public class GameBoardEasyPanel extends JPanel {
         Object[] options = { exitButton };
         JOptionPane pane = new JOptionPane(message, JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, options, exitButton);
         JDialog dialog = pane.createDialog(this, "游戏结果");
-        exitButton.addActionListener(e -> dialog.dispose());
-        dialog.setVisible(true);
-        // 关闭游戏窗口并返回封面
-        SwingUtilities.getWindowAncestor(this).dispose();
-        SwingUtilities.invokeLater(() -> {
-            MineSweeperMain mainFrame = new MineSweeperMain();
+        exitButton.addActionListener(e -> {
+            dialog.dispose();
+            Window window = SwingUtilities.getWindowAncestor(this);
+            if (window != null) window.dispose();
             mainFrame.setVisible(true);
+            mainFrame.showCoverPanel();
         });
+        dialog.setVisible(true);
     }
 
     // 自定义进度条面板，篮球悬浮在进度条上
