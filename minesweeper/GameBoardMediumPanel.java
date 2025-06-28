@@ -36,6 +36,8 @@ public class GameBoardMediumPanel extends JPanel {
 
     private MineSweeperMain mainFrame;
 
+    private boolean firstClick = true;
+
     public GameBoardMediumPanel(MineSweeperMain mainFrame) {
         this.mainFrame = mainFrame;
         setLayout(new BorderLayout());
@@ -283,7 +285,23 @@ public class GameBoardMediumPanel extends JPanel {
         @Override
         public void mouseClicked(MouseEvent e) {         // Get the source object that fired the Event
             Cell sourceCell = (Cell)e.getSource();
-
+            int row = sourceCell.row;
+            int col = sourceCell.col;
+            if (firstClick) {
+                firstClick = false;
+                if (cells[row][col].isMined) {
+                    cells[row][col].isMined = false;
+                    // 随机放一个地雷到其他非雷格子
+                    while (true) {
+                        int r = (int)(Math.random() * rows);
+                        int c = (int)(Math.random() * cols);
+                        if (!cells[r][c].isMined && (r != row || c != col)) {
+                            cells[r][c].isMined = true;
+                            break;
+                        }
+                    }
+                }
+            }
             // 鼠标左键单击单元格的功能是打开（Reveal）单元格；
             // 鼠标右键单击单元格的功能是给单元格添加/删除旗帜标记，这个标记的作用是用来标记地雷。
             if (e.getButton() == MouseEvent.BUTTON1) {  // 鼠标左键单击

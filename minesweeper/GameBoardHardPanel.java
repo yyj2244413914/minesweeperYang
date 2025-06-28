@@ -31,6 +31,8 @@ public class GameBoardHardPanel extends JPanel {
     Cell cells[][] = new Cell[rows][cols];
     private MineSweeperMain mainFrame;
 
+    private boolean firstClick = true;
+
     public GameBoardHardPanel(MineSweeperMain mainFrame) {
         this.mainFrame = mainFrame;
         setLayout(new BorderLayout());
@@ -204,6 +206,23 @@ public class GameBoardHardPanel extends JPanel {
         @Override
         public void mouseClicked(MouseEvent e) {
             Cell sourceCell = (Cell)e.getSource();
+            int row = sourceCell.row;
+            int col = sourceCell.col;
+            if (firstClick) {
+                firstClick = false;
+                if (cells[row][col].isMined) {
+                    cells[row][col].isMined = false;
+                    // 随机放一个地雷到其他非雷格子
+                    while (true) {
+                        int r = (int)(Math.random() * rows);
+                        int c = (int)(Math.random() * cols);
+                        if (!cells[r][c].isMined && (r != row || c != col)) {
+                            cells[r][c].isMined = true;
+                            break;
+                        }
+                    }
+                }
+            }
             if (e.getButton() == MouseEvent.BUTTON1) {
                 if (sourceCell.isMined) {
                     timer.stop();
