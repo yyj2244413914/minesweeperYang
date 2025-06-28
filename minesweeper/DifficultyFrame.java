@@ -137,7 +137,7 @@ public class DifficultyFrame extends JFrame {
             SoundUtil.playClickSound();
             JFrame gameFrame = new JFrame("扫雷游戏 - 高级");
             gameFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            gameFrame.setSize(1700, 1300);
+            gameFrame.setSize(1600, 1000);
             gameFrame.setLocationRelativeTo(null);
             GameBoardHardPanel gamePanel = new GameBoardHardPanel(mainFrame);
             gameFrame.add(gamePanel);

@@ -109,20 +109,6 @@ public class GameBoardMediumPanel extends JPanel {
                 if (backgroundImage != null) {
                     g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
                 }
-                // 绘制分割线
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setColor(Color.BLACK);
-                g2d.setStroke(new BasicStroke(2.0f));
-                int cellWidth = getWidth() / cols;
-                int cellHeight = getHeight() / rows;
-                for (int i = 1; i < cols; i++) {
-                    int x = i * cellWidth;
-                    g2d.drawLine(x, 0, x, getHeight());
-                }
-                for (int i = 1; i < rows; i++) {
-                    int y = i * cellHeight;
-                    g2d.drawLine(0, y, getWidth(), y);
-                }
             }
         };
         boardPanel.setLayout(new GridLayout(rows, cols, 3, 3));

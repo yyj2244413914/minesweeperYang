@@ -107,6 +107,6 @@ public class Cell extends JButton {
     public void setText(String text) {
         super.setText(text);
         int size = Math.min(getWidth(), getHeight());
-        setFont(new Font("Segoe UI Emoji", Font.BOLD, (int)(size * 0.25)));
+        setFont(new Font("Segoe UI Emoji", Font.BOLD, (int)(size * 0.20)));
     }
 }
